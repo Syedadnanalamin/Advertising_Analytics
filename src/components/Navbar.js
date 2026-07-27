@@ -27,7 +27,7 @@ export default function Navbar({
                 className="w-full h-full object-contain rounded-lg"
               />
             </div>
-            <span className="text-sm sm:text-lg font-bold tracking-tight text-white truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none">
+            <span className="text-sm sm:text-lg font-bold tracking-tight text-white truncate max-w-[160px] min-[375px]:max-w-[220px] min-[440px]:max-w-none">
               BOOST HOUSE AGENCY
             </span>
           </div>

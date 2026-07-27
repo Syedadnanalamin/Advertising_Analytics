@@ -20,7 +20,7 @@ export default function DashboardHeader({
         <h2 className="text-2xl md:text-3xl font-extrabold text-white">
           {campaignData.campaignName}
         </h2>
-        <div className="flex items-center gap-4 text-sm text-zinc-400 pt-1">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-zinc-400 pt-1">
           <div className="flex items-center gap-1.5">
             <div className={`w-2.5 h-2.5 rounded-full ${campaignData.status === "ACTIVE"
               ? "bg-emerald-500 animate-pulse"
@@ -30,35 +30,35 @@ export default function DashboardHeader({
               }`} />
             <span className="font-bold text-zinc-300">{campaignData.status}</span>
           </div>
-          <span>•</span>
+          <span className="text-zinc-600">•</span>
           <span className="font-semibold text-indigo-300">Boost House Agency Verified</span>
         </div>
       </div>
 
       {/* Date Filters System */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 print:hidden w-full sm:w-auto">
-        <div className="grid grid-cols-2 xs:grid-cols-4 sm:flex bg-[#12121a] p-1 rounded-xl border border-white/5 gap-1 w-full sm:w-auto">
+        <div className="flex overflow-x-auto whitespace-nowrap bg-[#12121a] p-1 rounded-xl border border-white/5 gap-1 w-full sm:w-auto scrollbar-none">
           <button
             onClick={() => setDatePreset("today")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "today" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center shrink-0 ${datePreset === "today" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             Today
           </button>
           <button
             onClick={() => setDatePreset("yesterday")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "yesterday" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center shrink-0 ${datePreset === "yesterday" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             Yesterday
           </button>
           <button
             onClick={() => setDatePreset("7days")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "7days" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center shrink-0 ${datePreset === "7days" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             7 Days
           </button>
           <button
             onClick={() => setDatePreset("maximum")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "maximum" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center shrink-0 ${datePreset === "maximum" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             Maximum
           </button>
