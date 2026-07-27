@@ -6,7 +6,7 @@ export default function SearchScreen({
   onSubmit
 }) {
   return (
-    <div className="min-h-screen grid-bg relative flex flex-col items-center justify-center p-6 bg-[#0b0b0f]">
+    <div className="min-h-screen w-full relative flex flex-col items-center justify-center p-6 bg-[#0b0b0f]">
       {/* Background glow assets */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -15,9 +15,9 @@ export default function SearchScreen({
         {/* Header/Logo */}
         <div className="inline-flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-[#12121a]/80 border border-white/10 flex items-center justify-center p-2 overflow-hidden shadow-xl shadow-indigo-500/5">
-            <img 
-              src="/logo.jpg" 
-              alt="Boost House Agency Logo" 
+            <img
+              src="/logo.jpg"
+              alt="Boost House Agency Logo"
               className="w-full h-full object-contain rounded-xl"
             />
           </div>

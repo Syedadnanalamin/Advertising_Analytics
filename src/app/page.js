@@ -101,16 +101,18 @@ export default function Home() {
   // Render search screen if no campaign is selected
   if (!campaignId) {
     return (
+
       <SearchScreen
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onSubmit={handleSearchSubmit}
       />
+
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0b0f] flex flex-col relative print:bg-white print:text-black">
+    <div className="min-h-screen w-full bg-[#0b0b0f] flex flex-col relative print:bg-white print:text-black">
       {/* Background design elements */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none print:hidden" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-fuchsia-500/5 rounded-full blur-[120px] pointer-events-none print:hidden" />
