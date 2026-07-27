@@ -129,7 +129,7 @@ export default function Home() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 py-8 px-6 max-w-7xl mx-auto w-full space-y-6">
+      <main className="flex-1 py-6 sm:py-8 px-4 sm:px-6 max-w-7xl mx-auto w-full space-y-6">
         {/* Loading Overlay */}
         {loading && !campaignData && (
           <div className="h-[60vh] flex flex-col items-center justify-center gap-4">

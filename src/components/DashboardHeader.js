@@ -36,29 +36,29 @@ export default function DashboardHeader({
       </div>
 
       {/* Date Filters System */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 print:hidden">
-        <div className="flex bg-[#12121a] p-1 rounded-xl border border-white/5 gap-1">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 print:hidden w-full sm:w-auto">
+        <div className="grid grid-cols-2 xs:grid-cols-4 sm:flex bg-[#12121a] p-1 rounded-xl border border-white/5 gap-1 w-full sm:w-auto">
           <button
             onClick={() => setDatePreset("today")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 ${datePreset === "today" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "today" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             Today
           </button>
           <button
             onClick={() => setDatePreset("yesterday")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 ${datePreset === "yesterday" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "yesterday" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             Yesterday
           </button>
           <button
             onClick={() => setDatePreset("7days")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 ${datePreset === "7days" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "7days" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             7 Days
           </button>
           <button
             onClick={() => setDatePreset("maximum")}
-            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 ${datePreset === "maximum" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center w-full sm:w-auto ${datePreset === "maximum" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             Maximum
           </button>

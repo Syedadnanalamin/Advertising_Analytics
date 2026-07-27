@@ -27,20 +27,20 @@ export default function Navbar({
                 className="w-full h-full object-contain rounded-lg"
               />
             </div>
-            <span className="text-lg font-bold tracking-tight text-white">
+            <span className="text-sm sm:text-lg font-bold tracking-tight text-white truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none">
               BOOST HOUSE AGENCY
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={onExport}
             disabled={!hasData}
-            className="px-4 py-2 bg-white/5 hover:bg-white/10 active:scale-95 transition text-zinc-300 hover:text-white text-sm font-semibold rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+            className="px-3 sm:px-4 py-2 bg-white/5 hover:bg-white/10 active:scale-95 transition text-zinc-300 hover:text-white text-sm font-semibold rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
           >
-            <Download className="w-4 h-4" />
-            <span>Export Report</span>
+            <Download className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline">Export Report</span>
           </button>
           <button
             onClick={onRefresh}
