@@ -13,15 +13,15 @@ export default function SearchScreen({
 
       <div className="w-full max-w-xl text-center space-y-8 z-10">
         {/* Header/Logo */}
-        <div className="inline-flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#12121a]/80 border border-white/10 flex items-center justify-center p-2 overflow-hidden shadow-xl shadow-indigo-500/5">
+        <div className="inline-flex items-center gap-2.5 sm:gap-4 text-left">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#12121a]/80 border border-white/10 flex items-center justify-center p-1.5 sm:p-2 overflow-hidden shadow-xl shadow-indigo-500/5 shrink-0">
             <img
               src="/logo.jpg"
               alt="Boost House Agency Logo"
-              className="w-full h-full object-contain rounded-xl"
+              className="w-full h-full object-contain rounded-lg sm:rounded-xl"
             />
           </div>
-          <span className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
+          <span className="text-left text-2xl sm:text-3xl font-extrabold leading-tight tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
             BOOST HOUSE AGENCY
           </span>
         </div>
