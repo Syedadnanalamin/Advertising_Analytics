@@ -10,8 +10,6 @@ import Footer from "@/components/Footer";
 import SearchScreen from "@/components/SearchScreen";
 import DashboardHeader from "@/components/DashboardHeader";
 import KPICards from "@/components/KPICards";
-import PerformanceChart from "@/components/PerformanceChart";
-import PlatformDelivery from "@/components/PlatformDelivery";
 import AdCreativePerformance from "@/components/AdCreativePerformance";
 
 export default function Home() {
@@ -23,6 +21,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [campaignData, setCampaignData] = useState(null);
+  const [objectiveMode, setObjectiveMode] = useState("messages"); // 'messages' or 'purchase'
 
   // Date Filtering State
   const [datePreset, setDatePreset] = useState("maximum"); // default to Maximum
@@ -69,6 +68,12 @@ export default function Home() {
 
       if (result.success) {
         setCampaignData(result.data);
+        // Auto-detect objective from campaign meta
+        if (result.data.objective && (result.data.objective.includes("SALES") || result.data.objective.includes("CONVERSIONS"))) {
+          setObjectiveMode("purchase");
+        } else {
+          setObjectiveMode("messages");
+        }
       } else {
         setError(result.error || "Could not retrieve campaign. Check Campaign ID.");
       }
@@ -176,25 +181,15 @@ export default function Home() {
               setStartDate={setStartDate}
               endDate={endDate}
               setEndDate={setEndDate}
+              objectiveMode={objectiveMode}
+              setObjectiveMode={setObjectiveMode}
             />
 
             {/* KPI Cards Grid */}
-            <KPICards summary={campaignData.summary} />
-
-            {/* Graphs & Platform details */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Main SVG Graph */}
-              <PerformanceChart dailyData={campaignData.daily} />
-
-              {/* Platform and Delivery Breakdown */}
-              <PlatformDelivery
-                platforms={campaignData.platforms}
-                summary={campaignData.summary}
-              />
-            </div>
+            <KPICards summary={campaignData.summary} objectiveMode={objectiveMode} />
 
             {/* Ad Creative breakdown */}
-            <AdCreativePerformance ads={campaignData.ads} />
+            <AdCreativePerformance ads={campaignData.ads} objectiveMode={objectiveMode} />
           </div>
         )}
       </main>

@@ -4,14 +4,23 @@ export default function DashboardHeader({
   campaignData,
   datePreset,
   setDatePreset,
-
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  objectiveMode,
+  setObjectiveMode,
 }) {
   return (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 glass p-6 rounded-2xl border border-white/5">
       <div className="space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="px-2.5 py-1 text-xs font-bold tracking-wide rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/10">
-            MESSAGING CAMPAIGN
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className={`px-2.5 py-1 text-xs font-bold tracking-wide rounded-md border ${
+            objectiveMode === "purchase"
+              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/10"
+              : "bg-indigo-500/10 text-indigo-400 border-indigo-500/10"
+          }`}>
+            {objectiveMode === "purchase" ? "SALES / PURCHASE CAMPAIGN" : "MESSAGING CAMPAIGN"}
           </span>
           <span className="text-zinc-500 text-sm font-medium">
             ID: {campaignData.campaignId}
@@ -35,8 +44,32 @@ export default function DashboardHeader({
         </div>
       </div>
 
-      {/* Date Filters System */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 print:hidden w-full sm:w-auto">
+      {/* Date Filters System & Objective Toggle */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 print:hidden w-full sm:w-auto">
+        {/* Objective Selector */}
+        <div className="flex bg-[#12121a] p-1 rounded-xl border border-white/5 gap-1 shrink-0">
+          <button
+            onClick={() => setObjectiveMode("messages")}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center shrink-0 ${
+              objectiveMode === "messages"
+                ? "bg-indigo-600 text-white font-bold"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            Messages
+          </button>
+          <button
+            onClick={() => setObjectiveMode("purchase")}
+            className={`px-3 py-2 text-xs font-semibold rounded-lg transition duration-200 text-center shrink-0 ${
+              objectiveMode === "purchase"
+                ? "bg-emerald-600 text-white font-bold"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            Purchases
+          </button>
+        </div>
+
         <div className="flex overflow-x-auto whitespace-nowrap bg-[#12121a] p-1 rounded-xl border border-white/5 gap-1 w-full sm:w-auto scrollbar-none">
           <button
             onClick={() => setDatePreset("today")}

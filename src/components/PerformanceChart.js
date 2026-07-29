@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function PerformanceChart({ dailyData }) {
-  const [chartMetric, setChartMetric] = useState("messages"); // 'messages' or 'spend'
+export default function PerformanceChart({ dailyData, objectiveMode }) {
+  const isPurchase = objectiveMode === "purchase";
+  const [chartMetric, setChartMetric] = useState(isPurchase ? "purchases" : "messages");
   const [hoveredDataPoint, setHoveredDataPoint] = useState(null);
+
+  // Sync metric state with campaign objective mode
+  useEffect(() => {
+    setChartMetric(isPurchase ? "purchases" : "messages");
+  }, [isPurchase]);
 
   if (!dailyData || dailyData.length === 0) return null;
 
@@ -10,13 +16,22 @@ export default function PerformanceChart({ dailyData }) {
   const height = 300;
   const padding = { top: 30, right: 30, bottom: 40, left: 60 };
 
+  // Helper to get metric values
+  const getMetricValue = (d, metric) => {
+    if (metric === "messages") return d.messages || 0;
+    if (metric === "purchases") return d.purchases || 0;
+    if (metric === "landingPageViews") return d.landingPageViews || 0;
+    if (metric === "spend") return d.spend || 0;
+    return 0;
+  };
+
   // Get max values for calculations
-  const maxVal = Math.max(...dailyData.map(d => chartMetric === "messages" ? d.messages : d.spend)) || 1;
+  const maxVal = Math.max(...dailyData.map(d => getMetricValue(d, chartMetric))) || 1;
   const n = dailyData.length;
 
   // Calculate coordinates
   const points = dailyData.map((d, i) => {
-    const val = chartMetric === "messages" ? d.messages : d.spend;
+    const val = getMetricValue(d, chartMetric);
     const x = padding.left + (i / Math.max(1, n - 1)) * (width - padding.left - padding.right);
     const y = height - padding.bottom - (val / maxVal) * (height - padding.top - padding.bottom);
     return { x, y, data: d, index: i };
@@ -33,9 +48,20 @@ export default function PerformanceChart({ dailyData }) {
     ? `${pathD} L ${points[points.length - 1].x} ${height - padding.bottom} L ${points[0].x} ${height - padding.bottom} Z`
     : "";
 
-  // Set colors
-  const strokeColor = chartMetric === "messages" ? "#6366f1" : "#10b981"; // Indigo or Emerald
-  const areaGradient = chartMetric === "messages" ? "url(#indigoGrad)" : "url(#emeraldGrad)";
+  // Set colors based on the chosen metric
+  let strokeColor = "#6366f1"; // Indigo default
+  let areaGradient = "url(#indigoGrad)";
+
+  if (chartMetric === "spend") {
+    strokeColor = "#10b981"; // Emerald
+    areaGradient = "url(#emeraldGrad)";
+  } else if (chartMetric === "purchases") {
+    strokeColor = "#10b981"; // Emerald for Purchases
+    areaGradient = "url(#emeraldGrad)";
+  } else if (chartMetric === "landingPageViews") {
+    strokeColor = "#ec4899"; // Pink for Landing Page Views
+    areaGradient = "url(#pinkGrad)";
+  }
 
   return (
     <div className="lg:col-span-2 glass p-6 rounded-2xl border border-white/5 space-y-6">
@@ -46,18 +72,43 @@ export default function PerformanceChart({ dailyData }) {
         </div>
 
         <div className="flex bg-[#12121a] p-1 rounded-xl border border-white/5 gap-1 print:hidden">
-          <button
-            onClick={() => setChartMetric("messages")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition duration-200 ${chartMetric === "messages" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
-          >
-            Conversations
-          </button>
-          <button
-            onClick={() => setChartMetric("spend")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition duration-200 ${chartMetric === "spend" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
-          >
-            Spend
-          </button>
+          {!isPurchase ? (
+            <>
+              <button
+                onClick={() => setChartMetric("messages")}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition duration-200 ${chartMetric === "messages" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              >
+                Conversations
+              </button>
+              <button
+                onClick={() => setChartMetric("spend")}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition duration-200 ${chartMetric === "spend" ? "bg-indigo-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              >
+                Spend
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => setChartMetric("purchases")}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition duration-200 ${chartMetric === "purchases" ? "bg-emerald-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              >
+                Purchases
+              </button>
+              <button
+                onClick={() => setChartMetric("landingPageViews")}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition duration-200 ${chartMetric === "landingPageViews" ? "bg-pink-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              >
+                LP Views
+              </button>
+              <button
+                onClick={() => setChartMetric("spend")}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition duration-200 ${chartMetric === "spend" ? "bg-emerald-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              >
+                Spend
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -71,6 +122,10 @@ export default function PerformanceChart({ dailyData }) {
             <linearGradient id="emeraldGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
               <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+            </linearGradient>
+            <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ec4899" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#ec4899" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -188,12 +243,23 @@ export default function PerformanceChart({ dailyData }) {
                 day: "numeric",
               })}
             </div>
-            <div className="flex gap-4 font-bold">
-              <span className="text-indigo-400">
-                💬 {hoveredDataPoint.data.messages} chats
-              </span>
+            <div className="flex flex-col gap-1 font-bold">
+              {!isPurchase ? (
+                <span className="text-indigo-400">
+                  💬 {(hoveredDataPoint.data.messages || 0).toLocaleString()} chats
+                </span>
+              ) : (
+                <>
+                  <span className="text-emerald-400">
+                    🛍️ {(hoveredDataPoint.data.purchases || 0).toLocaleString()} purchases
+                  </span>
+                  <span className="text-pink-400">
+                    📄 {(hoveredDataPoint.data.landingPageViews || 0).toLocaleString()} views
+                  </span>
+                </>
+              )}
               <span className="text-emerald-400">
-                💵 ${hoveredDataPoint.data.spend.toFixed(2)}
+                💵 ${hoveredDataPoint.data.spend.toFixed(2)} spent
               </span>
             </div>
           </div>
