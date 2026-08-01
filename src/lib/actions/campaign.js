@@ -36,7 +36,7 @@ export async function fetchCampaignInsightsAction(id, startDate, endDate, preset
     }
 
     // Fetch live data (insights and campaign metadata status)
-    const campaignMetaUrl = `https://graph.facebook.com/v19.0/${id}?fields=status,effective_status,start_time,stop_time,objective&access_token=${accessToken}`;
+    const campaignMetaUrl = `https://graph.facebook.com/v19.0/${id}?fields=name,status,effective_status,start_time,stop_time,objective&access_token=${accessToken}`;
 
     const [response, metaResponse] = await Promise.all([
       fetch(fbUrl, { cache: 'no-store' }),
@@ -46,6 +46,14 @@ export async function fetchCampaignInsightsAction(id, startDate, endDate, preset
     const fbResult = await response.json();
     const metaResult = await metaResponse.json();
 
+    if (metaResult.error) {
+      return {
+        success: false,
+        error: metaResult.error.message || 'Failed to fetch campaign metadata from Facebook Marketing API',
+        code: metaResult.error.code
+      };
+    }
+
     if (fbResult.error) {
       return {
         success: false,
@@ -54,7 +62,7 @@ export async function fetchCampaignInsightsAction(id, startDate, endDate, preset
       };
     }
 
-    let campaignStatus = metaResult.status || 'ACTIVE';
+    let campaignStatus = metaResult.effective_status || metaResult.status || 'ACTIVE';
     if (metaResult.effective_status === 'COMPLETED') {
       campaignStatus = 'COMPLETED';
     } else if (campaignStatus === 'PAUSED' || metaResult.effective_status === 'PAUSED') {
@@ -69,14 +77,16 @@ export async function fetchCampaignInsightsAction(id, startDate, endDate, preset
 
     const campaignObjective = metaResult.objective || '';
 
-    const insights = fbResult.data && fbResult.data[0];
-
-    if (!insights) {
-      return {
-        success: false,
-        error: "Your campaign ID is not valid or has no insights data available yet."
-      };
-    }
+    const insights = (fbResult.data && fbResult.data[0]) || {
+      campaign_name: metaResult.name || `Campaign #${id}`,
+      spend: 0,
+      impressions: 0,
+      reach: 0,
+      clicks: 0,
+      cpc: 0,
+      ctr: 0,
+      actions: []
+    };
 
     // Helper to get action value by types
     const getActionValue = (actions, types) => {
@@ -140,20 +150,58 @@ export async function fetchCampaignInsightsAction(id, startDate, endDate, preset
       const adInsightsData = await adInsightsRes.json();
       const adsData = await adsRes.json();
 
-      // 4. Map creative thumbnails and status
-      const creativeMap = {};
-      const statusMap = {};
+      // 4. Construct merged ads details from all campaign ads
       if (adsData && adsData.data && Array.isArray(adsData.data)) {
         adsData.data.forEach(adItem => {
-          if (adItem.id) {
-            creativeMap[adItem.id] = adItem.creative?.thumbnail_url || '';
-            statusMap[adItem.id] = adItem.status || adItem.effective_status || 'ACTIVE';
-          }
+          if (!adItem.id) return;
+
+          // Find matching ad-level insight if it exists
+          const adInsight = adInsightsData && adInsightsData.data && Array.isArray(adInsightsData.data)
+            ? adInsightsData.data.find(insight => insight.ad_id === adItem.id)
+            : null;
+
+          const adActions = adInsight ? adInsight.actions || [] : [];
+          const adMessages = getActionValue(adActions, [
+            'onsite_conversion.messaging_conversation_started_7d',
+            'onsite_conversion.messaging_conversation_started_unique',
+            'messaging_conversations_started_7d',
+            'onsite_conversion.messaging_conversation_started'
+          ]);
+          const adPurchases = getActionValue(adActions, [
+            'purchase',
+            'offsite_conversion.fb_pixel_purchase',
+            'onsite_conversion.purchase',
+            'offsite_conversion.fb_pixel_purchase_unique',
+            'offsite_conversion.fb_pixel_purchase_7d'
+          ]);
+          const adLandingPageViews = getActionValue(adActions, [
+            'landing_page_view',
+            'offsite_conversion.fb_pixel_landing_page_view',
+            'onsite_conversion.landing_page_view'
+          ]);
+
+          const adSpend = adInsight ? parseFloat(adInsight.spend || 0) : 0;
+          const adCtr = adInsight ? parseFloat(adInsight.ctr || 0) : 0;
+
+          adsArray.push({
+            id: adItem.id,
+            name: adItem.name || (adInsight ? adInsight.ad_name : `Ad #${adItem.id}`),
+            status: adItem.effective_status || adItem.status || 'ACTIVE',
+            messages: adMessages,
+            purchases: adPurchases,
+            landingPageViews: adLandingPageViews,
+            spend: adSpend,
+            ctr: adCtr,
+            cpa: adMessages > 0 ? parseFloat((adSpend / adMessages).toFixed(2)) : 0,
+            costPerPurchase: adPurchases > 0 ? parseFloat((adSpend / adPurchases).toFixed(2)) : 0,
+            costPerLPV: adLandingPageViews > 0 ? parseFloat((adSpend / adLandingPageViews).toFixed(2)) : 0,
+            thumbnail: adItem.creative?.thumbnail_url || 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=120&auto=format&fit=crop&q=60'
+          });
         });
       }
 
-      // 5. Construct merged ads details
-      if (adInsightsData && adInsightsData.data && Array.isArray(adInsightsData.data)) {
+      // 5. Fallback in case ads list is empty but we have insights
+      if (adsArray.length === 0 && adInsightsData && adInsightsData.data && Array.isArray(adInsightsData.data)) {
         adInsightsData.data.forEach(adInsight => {
           const adActions = adInsight.actions || [];
           const adMessages = getActionValue(adActions, [
@@ -180,7 +228,7 @@ export async function fetchCampaignInsightsAction(id, startDate, endDate, preset
           adsArray.push({
             id: adInsight.ad_id,
             name: adInsight.ad_name || `Ad #${adInsight.ad_id}`,
-            status: statusMap[adInsight.ad_id] || 'ACTIVE',
+            status: 'ACTIVE',
             messages: adMessages,
             purchases: adPurchases,
             landingPageViews: adLandingPageViews,
@@ -189,7 +237,7 @@ export async function fetchCampaignInsightsAction(id, startDate, endDate, preset
             cpa: adMessages > 0 ? parseFloat((adSpend / adMessages).toFixed(2)) : 0,
             costPerPurchase: adPurchases > 0 ? parseFloat((adSpend / adPurchases).toFixed(2)) : 0,
             costPerLPV: adLandingPageViews > 0 ? parseFloat((adSpend / adLandingPageViews).toFixed(2)) : 0,
-            thumbnail: creativeMap[adInsight.ad_id] || 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=120&auto=format&fit=crop&q=60'
+            thumbnail: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=120&auto=format&fit=crop&q=60'
           });
         });
       }

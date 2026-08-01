@@ -53,7 +53,8 @@ export default function AdCreativePerformance({ ads, objectiveMode }) {
 
   // Stats calculation
   const activeCount = ads.filter(ad => ad.status === "ACTIVE").length;
-  const pausedCount = ads.length - activeCount;
+  const inReviewCount = ads.filter(ad => ad.status === "IN_REVIEW" || ad.status === "PENDING_REVIEW").length;
+  const pausedCount = ads.length - activeCount - inReviewCount;
 
   return (
     <div className="glass p-6 rounded-2xl border border-white/5 space-y-6">
@@ -79,6 +80,15 @@ export default function AdCreativePerformance({ ads, objectiveMode }) {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               <span className="text-zinc-300 font-bold">{activeCount}</span> Active
             </span>
+            {inReviewCount > 0 && (
+              <>
+                <span className="text-zinc-600">|</span>
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+                  <span className="text-zinc-300 font-bold">{inReviewCount}</span> In Review
+                </span>
+              </>
+            )}
             <span className="text-zinc-600">|</span>
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
@@ -201,7 +211,9 @@ export default function AdCreativePerformance({ ads, objectiveMode }) {
                         <span className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wide border ${
                           ad.status === "ACTIVE" 
                             ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/10" 
-                            : "bg-zinc-500/10 text-zinc-400 border-white/5"
+                            : ad.status === "IN_REVIEW" || ad.status === "PENDING_REVIEW"
+                              ? "bg-sky-500/10 text-sky-400 border-sky-500/10 animate-pulse"
+                              : "bg-zinc-500/10 text-zinc-400 border-white/5"
                         }`}>
                           {ad.status || "ACTIVE"}
                         </span>

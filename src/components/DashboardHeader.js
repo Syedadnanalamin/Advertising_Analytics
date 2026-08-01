@@ -35,7 +35,9 @@ export default function DashboardHeader({
               ? "bg-emerald-500 animate-pulse"
               : campaignData.status === "PAUSED"
                 ? "bg-amber-500"
-                : "bg-zinc-500"
+                : campaignData.status === "IN_REVIEW" || campaignData.status === "PENDING_REVIEW"
+                  ? "bg-sky-400 animate-pulse"
+                  : "bg-zinc-500"
               }`} />
             <span className="font-bold text-zinc-300">{campaignData.status}</span>
           </div>
